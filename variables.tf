@@ -13,4 +13,50 @@ variable "admin_username" {
   default = "azureuser"
 }
 
+variable "vm_configs" {
+  type = list(object({
+    size = string
+    image = object({
+      publisher = string
+      offer     = string
+      sku       = string
+      version   = string
+    })
+  }))
+  description = "List of VM configurations"
 
+  validation {
+    condition     = length(var.vm_configs) == var.vm_count
+    error_message = "The number of VM configurations must be equal to var.vm_count"
+  }
+
+  default = [
+    {
+      size = "Standard_B1s"
+      image = {
+        publisher = "Debian"
+        offer     = "debian-12"
+        sku       = "12-gen2"
+        version   = "latest"
+      }
+    },
+    {
+      size = "Standard_B1s"
+      image = {
+        publisher = "Debian"
+        offer     = "debian-12"
+        sku       = "12-gen2"
+        version   = "latest"
+      }
+    },
+    {
+      size = "Standard_B1s"
+      image = {
+        publisher = "Debian"
+        offer     = "debian-12"
+        sku       = "12-gen2"
+        version   = "latest"
+      }
+    },
+  ]
+}

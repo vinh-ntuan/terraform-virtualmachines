@@ -38,3 +38,28 @@ resource "azurerm_network_interface" "this" {
     public_ip_address_id          = azurerm_public_ip.this[count.index].id
   }
 }
+
+resource "azurerm_linux_virtual_machine" "this" {
+  count                 = var.vm_count
+  name                  = "assessment-vm-${count.index}"
+  location              = azurerm_resource_group.this.location
+  resource_group_name   = azurerm_resource_group.this.name
+  size                  = var.vm_configs[count.index].size
+  network_interface_ids = [azurerm_network_interface.this[count.index].id]
+
+  disable_password_authentication = false
+  admin_username                  = var.admin_username
+  admin_password                  = random_password.vm_password[count.index].result
+
+  os_disk {
+    caching              = "None"
+    storage_account_type = "Standard_LRS"
+  }
+
+  source_image_reference {
+    publisher = var.vm_configs[count.index].image.publisher
+    offer     = var.vm_configs[count.index].image.offer
+    sku       = var.vm_configs[count.index].image.sku
+    version   = var.vm_configs[count.index].image.version
+  }
+}
